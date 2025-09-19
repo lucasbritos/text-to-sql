@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/postgres/dump/:/docker-entrypoint-initdb.d/
+      - pg_data:/var/lib/postgresql/data
+
+  neo4j:
+    image: neo4j:latest
+    environment:
+      NEO4J_AUTH: ${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-neo4j}
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_allowlist: "apoc.*"
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+
+volumes:
+  pg_data:
+  neo4j_data:
